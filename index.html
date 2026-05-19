@@ -281,7 +281,7 @@
       justify-content: center;
       gap: 7px;
       min-height: 38px;
-      padding: 0 11px;
+      padding: 0 12px;
       border: 1px solid rgba(6, 199, 85, .35);
       border-radius: 999px;
       background: #ecfff3;
@@ -298,7 +298,7 @@
     }
 
     .contact-icon {
-      width: 20px;
+      width: 24px;
       height: 20px;
       display: inline-grid;
       place-items: center;
@@ -309,8 +309,11 @@
     }
 
     .line-icon {
+      width: 34px;
+      height: 22px;
       background: #06c755;
-      font-size: 10px;
+      border-radius: 999px;
+      font-size: 11px;
       font-weight: 950;
     }
 
@@ -335,7 +338,7 @@
       .mode { grid-column: 1 / -1; }
       .mode { white-space: normal; }
       button { flex: 1 1 auto; }
-      .contact-actions { display: grid; grid-template-columns: 1fr 1fr; }
+      .contact-actions { display: grid; grid-template-columns: 1.25fr .85fr; }
       .contact-link { width: 100%; }
       .results { grid-template-columns: 1fr; }
     }
@@ -394,7 +397,7 @@
   <script>
     const LIFF_ID = '2010125232-bNHZhARc';
     const API_URL = 'https://script.google.com/macros/s/AKfycbyN72C-66y587hnc9IwuS7pLSSEBQw70nD93mFex_8UYzt-KCU2jIiOyHty1Az2Nzvs/exec';
-    const CONTACT_LINE_URL = 'https://line.me/R/ti/p/YOKOHAMA888';
+    const CONTACT_LINE_URL = 'https://line.me/ti/p/rfM3-6Bntr';
     const CONTACT_PHONE = '0929783497';
     const state = {
       profile: {},
@@ -653,7 +656,7 @@
           <div class="contact-actions">
             <a class="contact-link" href="${CONTACT_LINE_URL}" target="_blank" rel="noopener">
               <span class="contact-icon line-icon">LINE</span>
-              LINE 聯繫
+              聯繫統全-張欽漢
             </a>
             <a class="contact-link phone" href="tel:${CONTACT_PHONE}">
               <span class="contact-icon phone-icon">☎</span>
