@@ -330,6 +330,167 @@
 
     .hidden { display: none; }
 
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        repeating-linear-gradient(135deg, rgba(15, 118, 110, .055) 0 8px, transparent 8px 22px),
+        rgba(245, 247, 248, .9);
+      backdrop-filter: blur(5px);
+      transition: opacity .22s ease, visibility .22s ease;
+    }
+
+    .loading-overlay.hidden {
+      display: grid;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loading-card {
+      width: min(280px, 86vw);
+      display: grid;
+      justify-items: center;
+      gap: 14px;
+      padding: 24px 22px 20px;
+      border: 1px solid rgba(15, 118, 110, .16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .92);
+      box-shadow: var(--shadow);
+    }
+
+    .runner {
+      position: relative;
+      width: 96px;
+      height: 86px;
+    }
+
+    .runner-track {
+      position: absolute;
+      left: 7px;
+      right: 7px;
+      bottom: 4px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(15, 118, 110, .35), transparent);
+      overflow: hidden;
+    }
+
+    .runner-track::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: 35%;
+      border-radius: inherit;
+      background: var(--brand);
+      animation: trackSlide 1.2s linear infinite;
+    }
+
+    .runner-body {
+      position: absolute;
+      left: 34px;
+      top: 18px;
+      width: 28px;
+      height: 38px;
+      animation: runnerBob .72s ease-in-out infinite;
+      transform-origin: 50% 80%;
+    }
+
+    .runner-head {
+      position: absolute;
+      left: 7px;
+      top: -14px;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: var(--ink);
+    }
+
+    .runner-torso {
+      position: absolute;
+      left: 10px;
+      top: 2px;
+      width: 9px;
+      height: 30px;
+      border-radius: 999px;
+      background: var(--brand);
+      transform: rotate(12deg);
+    }
+
+    .runner-arm,
+    .runner-leg {
+      position: absolute;
+      left: 13px;
+      top: 9px;
+      width: 7px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--accent);
+      transform-origin: 50% 3px;
+    }
+
+    .runner-arm.back { animation: armBack .72s ease-in-out infinite; }
+    .runner-arm.front { animation: armFront .72s ease-in-out infinite; }
+    .runner-leg.back {
+      top: 29px;
+      background: var(--brand-dark);
+      animation: legBack .72s ease-in-out infinite;
+    }
+    .runner-leg.front {
+      top: 29px;
+      background: var(--brand-dark);
+      animation: legFront .72s ease-in-out infinite;
+    }
+
+    .loading-text {
+      color: var(--brand-dark);
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .loading-subtext {
+      margin-top: -7px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    @keyframes runnerBob {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-5px) rotate(4deg); }
+    }
+
+    @keyframes armFront {
+      0%, 100% { transform: rotate(54deg); }
+      50% { transform: rotate(-58deg); }
+    }
+
+    @keyframes armBack {
+      0%, 100% { transform: rotate(-56deg); }
+      50% { transform: rotate(48deg); }
+    }
+
+    @keyframes legFront {
+      0%, 100% { transform: rotate(-54deg); }
+      50% { transform: rotate(42deg); }
+    }
+
+    @keyframes legBack {
+      0%, 100% { transform: rotate(46deg); }
+      50% { transform: rotate(-48deg); }
+    }
+
+    @keyframes trackSlide {
+      from { transform: translateX(-120%); }
+      to { transform: translateX(330%); }
+    }
+
     @media (max-width: 680px) {
       .app { width: min(100% - 20px, 980px); padding-top: 12px; }
       header, .panel-head { align-items: start; flex-direction: column; }
@@ -345,6 +506,24 @@
   </style>
 </head>
 <body>
+  <div class="loading-overlay" id="loadingOverlay" aria-live="polite">
+    <div class="loading-card">
+      <div class="runner" aria-hidden="true">
+        <div class="runner-body">
+          <span class="runner-head"></span>
+          <span class="runner-torso"></span>
+          <span class="runner-arm back"></span>
+          <span class="runner-arm front"></span>
+          <span class="runner-leg back"></span>
+          <span class="runner-leg front"></span>
+        </div>
+        <div class="runner-track"></div>
+      </div>
+      <div class="loading-text" id="loadingText">正在登入 LINE</div>
+      <div class="loading-subtext">資料準備中，請稍候</div>
+    </div>
+  </div>
+
   <main class="app">
     <header>
       <div class="brand-title">
@@ -409,6 +588,8 @@
     };
 
     const els = {
+      loadingOverlay: document.getElementById('loadingOverlay'),
+      loadingText: document.getElementById('loadingText'),
       userState: document.getElementById('userState'),
       modeText: document.getElementById('modeText'),
       quickSearch: document.getElementById('quickSearch'),
@@ -442,6 +623,7 @@
     els.clearButton.addEventListener('click', resetView);
 
     async function boot() {
+      setLoading(true, '正在登入 LINE');
       state.profile = { userId: '', displayName: '', source: '' };
       els.userState.textContent = 'LINE 身分確認中';
       els.modeText.textContent = '僅限 LINE 開啟';
@@ -453,6 +635,7 @@
         return;
       }
 
+      setLoading(true, '正在讀取庫存');
       els.userState.textContent = state.profile.displayName;
       els.modeText.textContent = '已取得 LINE 身分';
 
@@ -462,6 +645,11 @@
       } catch (error) {
         handleError(error);
       }
+    }
+
+    function setLoading(active, message) {
+      if (message) els.loadingText.textContent = message;
+      els.loadingOverlay.classList.toggle('hidden', !active);
     }
 
     async function requireLineProfile() {
@@ -493,6 +681,7 @@
     }
 
     function blockAccess(message) {
+      setLoading(false);
       els.userState.textContent = '未通過 LINE 驗證';
       els.modeText.textContent = '無法顯示資料';
       els.rimHint.textContent = '需從 LINE 開啟';
@@ -549,6 +738,7 @@
     }
 
     function handleBootstrap(response) {
+      setLoading(false);
       if (!response || !response.ok) {
         els.userState.textContent = '未授權';
         els.modeText.textContent = '請聯絡管理員';
@@ -739,6 +929,7 @@
     }
 
     function handleError(error) {
+      setLoading(false);
       els.userState.textContent = '載入失敗';
       els.modeText.textContent = '系統暫時不可用';
       els.emptyState.textContent = error && error.message ? error.message : '請稍後再試。';
