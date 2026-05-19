@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    :root {
+      --bg: #f5f7f8;
+      --surface: #ffffff;
+      --ink: #15181d;
+      --muted: #64748b;
+      --line: #d7dde6;
+      --brand: #0f766e;
+      --brand-dark: #0b5f59;
+      --accent: #b45309;
+      --warn: #9a3412;
+      --soft: #f8fafc;
+      --shadow: 0 14px 34px rgba(18, 24, 38, .07);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        repeating-linear-gradient(135deg, rgba(15, 118, 110, .045) 0 8px, transparent 8px 22px),
+        linear-gradient(180deg, #eef3f2 0, var(--bg) 260px);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .app {
+      width: min(980px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 18px 0 42px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 14px;
+      padding: 10px 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tire-mark {
+      width: 42px;
+      height: 42px;
+      border: 8px solid var(--ink);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, #fff 0 28%, transparent 29%),
+        conic-gradient(from 0deg, var(--brand) 0 12%, transparent 12% 24%, var(--accent) 24% 36%, transparent 36% 48%, var(--brand) 48% 60%, transparent 60% 72%, var(--accent) 72% 84%, transparent 84%);
+      box-shadow: inset 0 0 0 3px #fff, 0 8px 18px rgba(18, 24, 38, .14);
+      flex: 0 0 auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .user-state {
+      color: var(--brand-dark);
+      font-size: 14px;
+      font-weight: 800;
+      text-align: right;
+      padding: 7px 10px;
+      border: 1px solid rgba(15, 118, 110, .18);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .72);
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    input {
+      min-height: 46px;
+      width: 100%;
+      padding: 0 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .mode {
+      min-height: 46px;
+      padding: 0 13px;
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--muted);
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      margin-top: 14px;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .result-panel {
+      border-top: 4px solid var(--brand);
+      margin-top: 10px;
+      background:
+        linear-gradient(90deg, rgba(15, 118, 110, .06), transparent 42%),
+        var(--surface);
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    button {
+      min-height: 42px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease;
+    }
+
+    button.active,
+    button:hover {
+      border-color: var(--brand);
+      background: var(--brand);
+      color: #fff;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      display: grid;
+      gap: 8px;
+      min-height: 170px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffffff 0, var(--soft) 100%);
+      box-shadow: 0 8px 20px rgba(18, 24, 38, .05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      background: var(--brand);
+    }
+
+    .title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 850;
+      line-height: 1.25;
+    }
+
+    .pattern {
+      color: var(--muted);
+      font-weight: 700;
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .price {
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--brand-dark);
+    }
+
+    .stock {
+      width: fit-content;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: #e8f7f0;
+      color: var(--brand-dark);
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .stock.call {
+      background: #fff2e9;
+      color: var(--warn);
+    }
+
+    .empty {
+      color: var(--muted);
+      line-height: 1.55;
+      padding: 6px 0 2px;
+    }
+
+    .hidden { display: none; }
+
+    @media (max-width: 680px) {
+      .app { width: min(100% - 20px, 980px); padding-top: 12px; }
+      header, .panel-head { align-items: start; flex-direction: column; }
+      .user-state, .hint { text-align: left; }
+      .search-row { grid-template-columns: 1fr; }
+      .mode { white-space: normal; }
+      button { flex: 1 1 auto; }
+      .results { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="brand-title">
+        <span class="tire-mark" aria-hidden="true"></span>
+        <h1>統全輪胎價格查詢</h1>
+      </div>
+      <div class="user-state" id="userState">正在載入...</div>
+    </header>
+
+    <div class="search-row">
+      <input id="quickSearch" type="search" placeholder="快速搜尋規格，例如 2055516">
+      <div class="mode" id="modeText">準備載入</div>
+    </div>
+
+    <section class="panel result-panel">
+      <div class="panel-head">
+        <h2>品牌與價格</h2>
+        <span class="hint" id="resultHint">可直接搜尋或選完規格後顯示</span>
+      </div>
+      <div class="results" id="results"></div>
+      <div class="empty" id="emptyState">正在讀取資料...</div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>選輪框尺寸</h2>
+        <span class="hint" id="rimHint">載入資料中</span>
+      </div>
+      <div class="chips" id="rimChips"></div>
+    </section>
+
+    <section class="panel hidden" id="widthPanel">
+      <div class="panel-head">
+        <h2>選胎寬</h2>
+        <span class="hint">例如 155、175、205</span>
+      </div>
+      <div class="chips" id="widthChips"></div>
+    </section>
+
+    <section class="panel hidden" id="specPanel">
+      <div class="panel-head">
+        <h2>選完整規格</h2>
+        <span class="hint">同胎寬可能有不同扁平比或 C 胎</span>
+      </div>
+      <div class="chips" id="specChips"></div>
+    </section>
+  </main>
+
+  <script>
+    const LIFF_ID = '2010125232-bNHZhARc';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyN72C-66y587hnc9IwuS7pLSSEBQw70nD93mFex_8UYzt-KCU2jIiOyHty1Az2Nzvs/exec';
+    const state = {
+      profile: {},
+      role: 'customer',
+      inventory: [],
+      selectedRim: '',
+      selectedWidth: '',
+      selectedSpec: ''
+    };
+
+    const els = {
+      userState: document.getElementById('userState'),
+      modeText: document.getElementById('modeText'),
+      quickSearch: document.getElementById('quickSearch'),
+      rimHint: document.getElementById('rimHint'),
+      rimChips: document.getElementById('rimChips'),
+      widthPanel: document.getElementById('widthPanel'),
+      widthChips: document.getElementById('widthChips'),
+      specPanel: document.getElementById('specPanel'),
+      specChips: document.getElementById('specChips'),
+      resultHint: document.getElementById('resultHint'),
+      results: document.getElementById('results'),
+      emptyState: document.getElementById('emptyState')
+    };
+
+    boot();
+
+    els.quickSearch.addEventListener('input', () => {
+      const query = normalizeSpec(els.quickSearch.value);
+      if (!query) {
+        renderResults([]);
+        els.resultHint.textContent = state.selectedSpec || '可直接搜尋或選完規格後顯示';
+        return;
+      }
+
+      const matches = state.inventory.filter(item => normalizeSpec(item.spec).includes(query));
+      renderResults(matches);
+      els.resultHint.textContent = `搜尋到 ${matches.length} 筆`;
+    });
+
+    async function boot() {
+      state.profile = { userId: '', displayName: '', source: '' };
+      els.userState.textContent = 'LINE 身分確認中';
+      els.modeText.textContent = '僅限 LINE 開啟';
+
+      try {
+        state.profile = await requireLineProfile();
+      } catch (error) {
+        blockAccess(error.message || '請從 LINE App 內開啟此查詢頁。');
+        return;
+      }
+
+      els.userState.textContent = state.profile.displayName;
+      els.modeText.textContent = '已取得 LINE 身分';
+
+      try {
+        const response = await callApi('bootstrap', { idToken: state.profile.idToken });
+        handleBootstrap(response.data);
+      } catch (error) {
+        handleError(error);
+      }
+    }
+
+    async function requireLineProfile() {
+      if (!LIFF_ID || !window.liff) {
+        throw new Error('LIFF 尚未正確設定，請聯絡管理員。');
+      }
+
+      await withTimeout(liff.init({ liffId: LIFF_ID }), 15000, 'LINE 身分驗證逾時，請關閉後從 LINE 重新開啟。');
+
+      if (!liff.isInClient()) {
+        throw new Error('此查詢頁僅限從 LINE App 內開啟。');
+      }
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        throw new Error('正在導向 LINE 登入，請稍候重新開啟。');
+      }
+
+      const profile = await withTimeout(liff.getProfile(), 8000, '無法取得 LINE 使用者資料，請從 LINE 重新開啟。');
+      const idToken = liff.getIDToken();
+      const userId = profile && profile.userId ? String(profile.userId).trim() : '';
+      const displayName = profile && profile.displayName ? String(profile.displayName).trim() : '';
+
+      if (!idToken || !userId || !displayName) {
+        throw new Error('無法取得 LINE userId、暱稱或登入憑證，請從 LINE 重新開啟。');
+      }
+
+      return { userId, displayName, idToken, source: 'line_client' };
+    }
+
+    function blockAccess(message) {
+      els.userState.textContent = '未通過 LINE 驗證';
+      els.modeText.textContent = '無法顯示資料';
+      els.rimHint.textContent = '需從 LINE 開啟';
+      els.rimChips.innerHTML = '';
+      els.widthPanel.classList.add('hidden');
+      els.specPanel.classList.add('hidden');
+      renderResults([]);
+      els.emptyState.textContent = message;
+    }
+
+    async function initLineProfile() {
+      if (!LIFF_ID || !window.liff) {
+        state.profile = { userId: '', displayName: '預覽使用者' };
+        els.userState.textContent = '預覽模式';
+        els.modeText.textContent = '尚未設定 LIFF';
+        return;
+      }
+
+      try {
+        await withTimeout(
+          liff.init({ liffId: LIFF_ID }),
+          6000,
+          'LINE 驗證逾時，先以預覽模式載入。'
+        );
+      } catch (error) {
+        state.profile = { userId: '', displayName: '預覽使用者' };
+        els.userState.textContent = '預覽模式';
+        els.modeText.textContent = error.message || 'LINE 驗證逾時';
+        return;
+      }
+
+      if (!liff.isLoggedIn()) {
+        els.userState.textContent = 'LINE 未登入';
+        els.modeText.textContent = '準備登入 LINE';
+        liff.login();
+        return;
+      }
+
+      const profile = await liff.getProfile();
+      state.profile = {
+        userId: profile.userId,
+        displayName: profile.displayName
+      };
+      els.userState.textContent = profile.displayName;
+    }
+
+    function withTimeout(promise, timeoutMs, message) {
+      let timer;
+      const timeout = new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(message)), timeoutMs);
+      });
+
+      return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+    }
+
+    function handleBootstrap(response) {
+      if (!response || !response.ok) {
+        els.userState.textContent = '未授權';
+        els.modeText.textContent = '請聯絡管理員';
+        els.emptyState.textContent = response && response.message ? response.message : '目前無法載入資料。';
+        return;
+      }
+
+      state.role = response.role || 'customer';
+      state.inventory = response.inventory || [];
+      const roleText = state.role === 'admin' ? '管理者模式' : '客戶模式';
+      const loginText = response.loginRecord && response.loginRecord.recorded ? '已記錄登入' : '訪客';
+      els.modeText.textContent = `${roleText} / ${loginText}`;
+      renderRims();
+      renderResults([]);
+      els.emptyState.textContent = '可輸入規格搜尋，或先選擇輪框尺寸。';
+      els.rimHint.textContent = `共 ${unique(state.inventory.map(item => item.rim)).length} 種尺寸`;
+    }
+
+    function renderRims() {
+      const rims = unique(state.inventory.map(item => item.rim)).filter(Boolean).sort(numberSort);
+      renderChips(els.rimChips, rims, state.selectedRim, rim => {
+        state.selectedRim = rim;
+        state.selectedWidth = '';
+        state.selectedSpec = '';
+        els.quickSearch.value = '';
+        renderRims();
+        renderWidths();
+        renderSpecs();
+        renderResults([]);
+        els.emptyState.textContent = '請選擇胎寬。';
+      }, rim => `${rim} 吋`);
+    }
+
+    function renderWidths() {
+      const widths = unique(state.inventory
+        .filter(item => item.rim === state.selectedRim)
+        .map(item => item.width))
+        .filter(Boolean)
+        .sort(numberSort);
+
+      els.widthPanel.classList.toggle('hidden', !state.selectedRim);
+      renderChips(els.widthChips, widths, state.selectedWidth, width => {
+        state.selectedWidth = width;
+        state.selectedSpec = '';
+        els.quickSearch.value = '';
+        renderWidths();
+        renderSpecs();
+        renderResults([]);
+        els.emptyState.textContent = '請選擇完整規格。';
+      });
+    }
+
+    function renderSpecs() {
+      const specs = unique(state.inventory
+        .filter(item => item.rim === state.selectedRim && item.width === state.selectedWidth)
+        .map(item => item.spec))
+        .sort((a, b) => a.localeCompare(b, 'zh-Hant', { numeric: true }));
+
+      els.specPanel.classList.toggle('hidden', !state.selectedWidth);
+      renderChips(els.specChips, specs, state.selectedSpec, spec => {
+        state.selectedSpec = spec;
+        els.quickSearch.value = '';
+        renderSpecs();
+        const matches = state.inventory.filter(item => item.spec === spec);
+        renderResults(matches);
+        els.resultHint.textContent = `${spec}，共 ${matches.length} 筆`;
+        logQuery(spec, matches);
+      });
+    }
+
+    function renderResults(items) {
+      els.results.innerHTML = '';
+      if (!items.length) {
+        els.emptyState.classList.remove('hidden');
+        return;
+      }
+
+      els.emptyState.classList.add('hidden');
+      items.forEach(item => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        const stockClass = item.stockLabel === '請來電洽詢' ? 'stock call' : 'stock';
+        const stockText = item.stockLabel === '請來電洽詢' ? item.stockLabel : `庫存 ${item.stockLabel}`;
+        const adminLine = state.role === 'admin' && item.stockRaw
+          ? `<div class="meta">內部庫存：${escapeHtml(item.stockRaw)}　更新：${escapeHtml(item.updatedAt || '')}</div>`
+          : '';
+
+        card.innerHTML = `
+          <div class="title">
+            <span>${escapeHtml(item.brand)}</span>
+            <span class="pattern">${escapeHtml(item.pattern || '-')}</span>
+          </div>
+          <div class="meta">${escapeHtml([item.spec, item.loadSpeed, item.year ? `年份 ${item.year}` : ''].filter(Boolean).join(' ・ '))}</div>
+          <div class="price">${escapeHtml(item.price)}</div>
+          <div class="${stockClass}">${escapeHtml(stockText)}</div>
+          ${adminLine}
+        `;
+        els.results.append(card);
+      });
+    }
+
+    function logQuery(spec, matches) {
+      const inStockCount = matches.filter(item => item.stockLabel !== '請來電洽詢').length;
+      callApi('logQuery', {
+        idToken: state.profile.idToken,
+        spec,
+        rim: state.selectedRim,
+        width: state.selectedWidth,
+        resultCount: matches.length,
+        inStockCount
+      }).catch(error => console.warn('logQuery failed', error));
+    }
+
+    function callApi(action, payload) {
+      return new Promise((resolve, reject) => {
+        const callbackName = `__tongquan_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+        const script = document.createElement('script');
+        const params = new URLSearchParams({
+          api: action,
+          payload: JSON.stringify(payload || {}),
+          callback: callbackName
+        });
+
+        const cleanup = () => {
+          delete window[callbackName];
+          script.remove();
+        };
+
+        window[callbackName] = response => {
+          cleanup();
+          if (response && response.ok) {
+            resolve(response);
+          } else {
+            reject(new Error(response && response.message ? response.message : '後台回應失敗'));
+          }
+        };
+
+        script.onerror = () => {
+          cleanup();
+          reject(new Error('無法連線後台，請稍後再試。'));
+        };
+
+        script.src = `${API_URL}?${params.toString()}`;
+        document.body.append(script);
+      });
+    }
+
+    function renderChips(container, values, activeValue, onClick, label = value => value) {
+      container.innerHTML = '';
+      values.forEach(value => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = label(value);
+        button.className = value === activeValue ? 'active' : '';
+        button.addEventListener('click', () => onClick(value));
+        container.append(button);
+      });
+    }
+
+    function handleError(error) {
+      els.userState.textContent = '載入失敗';
+      els.modeText.textContent = '系統暫時不可用';
+      els.emptyState.textContent = error && error.message ? error.message : '請稍後再試。';
+      console.error(error);
+    }
+
+    function unique(values) {
+      return Array.from(new Set(values));
+    }
+
+    function numberSort(a, b) {
+      return Number(a) - Number(b);
+    }
+
+    function normalizeSpec(value) {
+      return String(value || '').replace(/\D/g, '');
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      }[char]));
+    }
+  </script>
+</body>
+</html>
