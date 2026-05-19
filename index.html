@@ -614,12 +614,12 @@
     const MIN_LOADING_MS = 1200;
     const LOGO_INTERVAL_MS = 500;
     const LOADING_JPG_LOGOS = [
-      'logos/dunlop.JPG',
-      'logos/利奧.JPG',
-      'logos/耐克森.JPG',
-      'logos/將軍.JPG',
-      'logos/富神.JPG',
-      'logos/擷取.JPG'
+      'logos/dunlop-photo.jpg',
+      'logos/leo-photo.jpg',
+      'logos/nexen-photo.jpg',
+      'logos/general-photo.jpg',
+      'logos/fortune-photo.jpg',
+      'logos/extra-photo.jpg'
     ];
     const LOADING_OTHER_LOGOS = [
       'logos/michelin.svg',
@@ -774,6 +774,7 @@
       }
       state.logoIndex = LOADING_LOGOS.indexOf(nextLogo);
       els.loadingLogo.src = nextLogo;
+      els.loadingLogo.onerror = rotateLoadingLogo;
       els.loadingLogo.style.animation = 'none';
       void els.loadingLogo.offsetWidth;
       els.loadingLogo.style.animation = '';
