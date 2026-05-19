@@ -378,31 +378,6 @@
       box-shadow: var(--shadow);
     }
 
-    .logo-carousel {
-      width: 210px;
-      height: 78px;
-      display: grid;
-      place-items: center;
-      padding: 12px 16px;
-      border: 1px solid rgba(15, 118, 110, .14);
-      border-radius: 8px;
-      background: #fff;
-      box-shadow: 0 8px 20px rgba(18, 24, 38, .07);
-      overflow: hidden;
-    }
-
-    .loading-logo {
-      max-width: 178px;
-      max-height: 52px;
-      object-fit: contain;
-      animation: logoPulse .5s ease;
-    }
-
-    @keyframes logoPulse {
-      from { opacity: .35; transform: scale(.96); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
     .runner {
       position: relative;
       width: 96px;
@@ -427,7 +402,7 @@
       width: 35%;
       border-radius: inherit;
       background: var(--brand);
-      animation: trackSlide 1.2s linear infinite;
+      animation: trackSlide 1.9s linear infinite;
     }
 
     .runner-body {
@@ -436,7 +411,7 @@
       top: 18px;
       width: 28px;
       height: 38px;
-      animation: runnerBob .72s ease-in-out infinite;
+      animation: runnerBob 1.15s ease-in-out infinite;
       transform-origin: 50% 80%;
     }
 
@@ -473,17 +448,17 @@
       transform-origin: 50% 3px;
     }
 
-    .runner-arm.back { animation: armBack .72s ease-in-out infinite; }
-    .runner-arm.front { animation: armFront .72s ease-in-out infinite; }
+    .runner-arm.back { animation: armBack 1.15s ease-in-out infinite; }
+    .runner-arm.front { animation: armFront 1.15s ease-in-out infinite; }
     .runner-leg.back {
       top: 29px;
       background: var(--brand-dark);
-      animation: legBack .72s ease-in-out infinite;
+      animation: legBack 1.15s ease-in-out infinite;
     }
     .runner-leg.front {
       top: 29px;
       background: var(--brand-dark);
-      animation: legFront .72s ease-in-out infinite;
+      animation: legFront 1.15s ease-in-out infinite;
     }
 
     .loading-text {
@@ -548,8 +523,16 @@
 <body>
   <div class="loading-overlay" id="loadingOverlay" aria-live="polite">
     <div class="loading-card">
-      <div class="logo-carousel" aria-hidden="true">
-        <img class="loading-logo" id="loadingLogo" src="logos/bridgestone.svg" alt="">
+      <div class="runner" aria-hidden="true">
+        <div class="runner-body">
+          <span class="runner-head"></span>
+          <span class="runner-torso"></span>
+          <span class="runner-arm back"></span>
+          <span class="runner-arm front"></span>
+          <span class="runner-leg back"></span>
+          <span class="runner-leg front"></span>
+        </div>
+        <div class="runner-track"></div>
       </div>
       <div class="loading-text" id="loadingText">正在登入 LINE</div>
       <div class="loading-subtext">資料準備中，請稍候</div>
@@ -612,41 +595,6 @@
     const CONTACT_LINE_URL = 'https://line.me/ti/p/rfM3-6Bntr';
     const CONTACT_PHONE = '0929783497';
     const MIN_LOADING_MS = 1200;
-    const LOGO_INTERVAL_MS = 500;
-    const LOADING_JPG_LOGOS = [
-      'logos/dunlop-photo.jpg',
-      'logos/leo-photo.jpg',
-      'logos/nexen-photo.jpg',
-      'logos/general-photo.jpg',
-      'logos/fortune-photo.jpg',
-      'logos/extra-photo.jpg'
-    ];
-    const LOADING_OTHER_LOGOS = [
-      'logos/michelin.svg',
-      'logos/bridgestone.svg',
-      'logos/yokohama.svg',
-      'logos/toyo.svg',
-      'logos/maxxis.svg',
-      'logos/continental.svg',
-      'logos/goodyear.svg',
-      'logos/dunlop.svg',
-      'logos/samsung.svg',
-      'logos/marshal.svg',
-      'logos/leo.svg',
-      'logos/giti.svg',
-      'logos/nankang.svg',
-      'logos/nexen.svg',
-      'logos/gripmax.svg',
-      'logos/grenlander.svg',
-      'logos/prinx.svg',
-      'logos/general.svg',
-      'logos/fortune.svg',
-      'logos/sunfull.svg',
-      'logos/lanvigator.svg',
-      'logos/roadx.svg',
-      'logos/delinte.svg'
-    ];
-    const LOADING_LOGOS = LOADING_JPG_LOGOS.concat(LOADING_OTHER_LOGOS);
     const state = {
       profile: {},
       role: 'customer',
@@ -655,15 +603,12 @@
       selectedWidth: '',
       selectedSpec: '',
       loadingStartedAt: 0,
-      logoTimer: 0,
-      logoIndex: -1,
       searchLogTimer: 0,
       lastLoggedSpec: ''
     };
 
     const els = {
       loadingOverlay: document.getElementById('loadingOverlay'),
-      loadingLogo: document.getElementById('loadingLogo'),
       loadingText: document.getElementById('loadingText'),
       userState: document.getElementById('userState'),
       modeText: document.getElementById('modeText'),
@@ -738,7 +683,6 @@
       if (active) {
         state.loadingStartedAt = Date.now();
         els.loadingOverlay.classList.remove('hidden');
-        startLogoCarousel();
         return;
       }
 
@@ -746,38 +690,7 @@
       const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
       window.setTimeout(() => {
         els.loadingOverlay.classList.add('hidden');
-        stopLogoCarousel();
       }, remaining);
-    }
-
-    function startLogoCarousel() {
-      if (state.logoTimer) return;
-      rotateLoadingLogo();
-      state.logoTimer = window.setInterval(rotateLoadingLogo, LOGO_INTERVAL_MS);
-    }
-
-    function stopLogoCarousel() {
-      window.clearInterval(state.logoTimer);
-      state.logoTimer = 0;
-    }
-
-    function rotateLoadingLogo() {
-      if (!LOADING_LOGOS.length) return;
-      const pool = Math.random() < .7 && LOADING_JPG_LOGOS.length
-        ? LOADING_JPG_LOGOS
-        : LOADING_OTHER_LOGOS;
-      let nextLogo = pool[Math.floor(Math.random() * pool.length)];
-      if (LOADING_LOGOS.length > 1 && nextLogo === LOADING_LOGOS[state.logoIndex]) {
-        const fallbackPool = pool.length > 1 ? pool : LOADING_LOGOS;
-        const currentPoolIndex = fallbackPool.indexOf(nextLogo);
-        nextLogo = fallbackPool[(currentPoolIndex + 1) % fallbackPool.length];
-      }
-      state.logoIndex = LOADING_LOGOS.indexOf(nextLogo);
-      els.loadingLogo.src = nextLogo;
-      els.loadingLogo.onerror = rotateLoadingLogo;
-      els.loadingLogo.style.animation = 'none';
-      void els.loadingLogo.offsetWidth;
-      els.loadingLogo.style.animation = '';
     }
 
     async function requireLineProfile() {
