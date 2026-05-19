@@ -381,7 +381,7 @@
     .truck-scene {
       position: relative;
       width: 210px;
-      height: 92px;
+      height: 104px;
       overflow: hidden;
     }
 
@@ -409,7 +409,7 @@
     .truck {
       position: absolute;
       left: 39px;
-      top: 33px;
+      top: 26px;
       width: 132px;
       height: 39px;
       animation: truckBounce 1.05s ease-in-out infinite;
@@ -424,6 +424,21 @@
       border-radius: 8px 4px 5px 5px;
       background: var(--brand);
       box-shadow: inset 0 -5px 0 rgba(0, 0, 0, .14);
+    }
+
+    .truck-label {
+      position: absolute;
+      left: 16px;
+      top: 18px;
+      width: 62px;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 950;
+      line-height: 1;
+      text-align: center;
+      letter-spacing: 0;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, .22);
+      z-index: 2;
     }
 
     .truck-cabin {
@@ -450,10 +465,10 @@
 
     .tire-stack {
       position: absolute;
-      left: 16px;
-      top: -4px;
+      left: 7px;
+      top: -20px;
       display: grid;
-      grid-template-columns: repeat(4, 18px);
+      grid-template-columns: repeat(5, 18px);
       gap: 2px;
     }
 
@@ -483,7 +498,7 @@
     .exhaust {
       position: absolute;
       left: 24px;
-      top: 51px;
+      top: 44px;
       width: 0;
       height: 0;
     }
@@ -566,12 +581,19 @@
             <span class="cargo-tire"></span>
             <span class="cargo-tire"></span>
             <span class="cargo-tire"></span>
-            <span class="cargo-tire"></span>
-            <span class="cargo-tire"></span>
-            <span class="cargo-tire"></span>
-            <span class="cargo-tire"></span>
+          <span class="cargo-tire"></span>
+          <span class="cargo-tire"></span>
+          <span class="cargo-tire"></span>
+          <span class="cargo-tire"></span>
+          <span class="cargo-tire"></span>
+          <span class="cargo-tire"></span>
+          <span class="cargo-tire"></span>
+          <span class="cargo-tire"></span>
+          <span class="cargo-tire"></span>
+          <span class="cargo-tire"></span>
           </div>
           <span class="truck-bed"></span>
+          <span class="truck-label">統全輪胎</span>
           <span class="truck-cabin"></span>
           <span class="truck-window"></span>
           <span class="truck-wheel back"></span>
