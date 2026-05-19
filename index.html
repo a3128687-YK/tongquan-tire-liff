@@ -85,7 +85,7 @@
 
     .search-row {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr auto auto;
       gap: 12px;
       margin: 16px 0;
     }
@@ -184,6 +184,18 @@
       transform: translateY(-1px);
     }
 
+    .clear-button {
+      min-width: 86px;
+      color: var(--brand-dark);
+      border-color: rgba(15, 118, 110, .32);
+      box-shadow: var(--shadow);
+    }
+
+    .clear-button:hover {
+      background: #e8f7f0;
+      color: var(--brand-dark);
+    }
+
     .results {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
@@ -256,6 +268,37 @@
       color: var(--warn);
     }
 
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 40px;
+      width: fit-content;
+      margin-top: 2px;
+      padding: 0 12px;
+      border: 1px solid rgba(6, 199, 85, .35);
+      border-radius: 999px;
+      background: #ecfff3;
+      color: #057a37;
+      font-size: 15px;
+      font-weight: 850;
+      text-decoration: none;
+    }
+
+    .line-icon {
+      width: 22px;
+      height: 22px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 7px;
+      background: #06c755;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 950;
+      line-height: 1;
+    }
+
     .empty {
       color: var(--muted);
       line-height: 1.55;
@@ -268,7 +311,8 @@
       .app { width: min(100% - 20px, 980px); padding-top: 12px; }
       header, .panel-head { align-items: start; flex-direction: column; }
       .user-state, .hint { text-align: left; }
-      .search-row { grid-template-columns: 1fr; }
+      .search-row { grid-template-columns: 1fr auto; }
+      .mode { grid-column: 1 / -1; }
       .mode { white-space: normal; }
       button { flex: 1 1 auto; }
       .results { grid-template-columns: 1fr; }
@@ -287,6 +331,7 @@
 
     <div class="search-row">
       <input id="quickSearch" type="search" placeholder="快速搜尋規格，例如 2055516">
+      <button class="clear-button" id="clearButton" type="button">清除</button>
       <div class="mode" id="modeText">準備載入</div>
     </div>
 
@@ -327,6 +372,7 @@
   <script>
     const LIFF_ID = '2010125232-bNHZhARc';
     const API_URL = 'https://script.google.com/macros/s/AKfycbyN72C-66y587hnc9IwuS7pLSSEBQw70nD93mFex_8UYzt-KCU2jIiOyHty1Az2Nzvs/exec';
+    const CONTACT_LINE_URL = 'https://line.me/R/ti/p/@958cazox';
     const state = {
       profile: {},
       role: 'customer',
@@ -340,6 +386,7 @@
       userState: document.getElementById('userState'),
       modeText: document.getElementById('modeText'),
       quickSearch: document.getElementById('quickSearch'),
+      clearButton: document.getElementById('clearButton'),
       rimHint: document.getElementById('rimHint'),
       rimChips: document.getElementById('rimChips'),
       widthPanel: document.getElementById('widthPanel'),
@@ -365,6 +412,8 @@
       renderResults(matches);
       els.resultHint.textContent = `搜尋到 ${matches.length} 筆`;
     });
+
+    els.clearButton.addEventListener('click', resetView);
 
     async function boot() {
       state.profile = { userId: '', displayName: '', source: '' };
@@ -492,6 +541,23 @@
       els.rimHint.textContent = `共 ${unique(state.inventory.map(item => item.rim)).length} 種尺寸`;
     }
 
+    function resetView() {
+      state.selectedRim = '';
+      state.selectedWidth = '';
+      state.selectedSpec = '';
+      els.quickSearch.value = '';
+      els.widthPanel.classList.add('hidden');
+      els.specPanel.classList.add('hidden');
+      els.widthChips.innerHTML = '';
+      els.specChips.innerHTML = '';
+      renderRims();
+      renderResults([]);
+      els.resultHint.textContent = '可直接搜尋或選完規格後顯示';
+      els.emptyState.textContent = '可輸入規格搜尋，或先選擇輪框尺寸。';
+      els.rimHint.textContent = `共 ${unique(state.inventory.map(item => item.rim)).length} 種尺寸`;
+      els.quickSearch.focus();
+    }
+
     function renderRims() {
       const rims = unique(state.inventory.map(item => item.rim)).filter(Boolean).sort(numberSort);
       renderChips(els.rimChips, rims, state.selectedRim, rim => {
@@ -560,6 +626,12 @@
         const adminLine = state.role === 'admin' && item.stockRaw
           ? `<div class="meta">內部庫存：${escapeHtml(item.stockRaw)}　更新：${escapeHtml(item.updatedAt || '')}</div>`
           : '';
+        const contactLine = `
+          <a class="contact-link" href="${CONTACT_LINE_URL}" target="_blank" rel="noopener">
+            <span class="line-icon">LINE</span>
+            與我聯繫
+          </a>
+        `;
 
         card.innerHTML = `
           <div class="title">
@@ -569,6 +641,7 @@
           <div class="meta">${escapeHtml([item.spec, item.loadSpeed, item.year ? `年份 ${item.year}` : ''].filter(Boolean).join(' ・ '))}</div>
           <div class="price">${escapeHtml(item.price)}</div>
           <div class="${stockClass}">${escapeHtml(stockText)}</div>
+          ${contactLine}
           ${adminLine}
         `;
         els.results.append(card);
