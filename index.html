@@ -378,87 +378,128 @@
       box-shadow: var(--shadow);
     }
 
-    .runner {
+    .truck-scene {
       position: relative;
-      width: 96px;
-      height: 86px;
+      width: 210px;
+      height: 92px;
+      overflow: hidden;
     }
 
-    .runner-track {
+    .truck-road {
       position: absolute;
-      left: 7px;
-      right: 7px;
-      bottom: 4px;
-      height: 3px;
+      left: 8px;
+      right: 8px;
+      bottom: 10px;
+      height: 4px;
       border-radius: 999px;
       background: linear-gradient(90deg, transparent, rgba(15, 118, 110, .35), transparent);
       overflow: hidden;
     }
 
-    .runner-track::before {
+    .truck-road::before {
       content: "";
       position: absolute;
       inset: 0;
-      width: 35%;
+      width: 34%;
       border-radius: inherit;
       background: var(--brand);
-      animation: trackSlide 1.9s linear infinite;
+      animation: roadSlide 1.35s linear infinite;
     }
 
-    .runner-body {
+    .truck {
       position: absolute;
-      left: 34px;
-      top: 18px;
-      width: 28px;
-      height: 38px;
-      animation: runnerBob 1.15s ease-in-out infinite;
-      transform-origin: 50% 80%;
+      left: 39px;
+      top: 33px;
+      width: 132px;
+      height: 39px;
+      animation: truckBounce 1.05s ease-in-out infinite;
     }
 
-    .runner-head {
+    .truck-bed {
       position: absolute;
-      left: 7px;
-      top: -14px;
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      background: var(--ink);
-    }
-
-    .runner-torso {
-      position: absolute;
-      left: 10px;
-      top: 2px;
-      width: 9px;
-      height: 30px;
-      border-radius: 999px;
+      left: 6px;
+      top: 14px;
+      width: 82px;
+      height: 27px;
+      border-radius: 8px 4px 5px 5px;
       background: var(--brand);
-      transform: rotate(12deg);
+      box-shadow: inset 0 -5px 0 rgba(0, 0, 0, .14);
     }
 
-    .runner-arm,
-    .runner-leg {
+    .truck-cabin {
       position: absolute;
-      left: 13px;
-      top: 9px;
-      width: 7px;
-      height: 28px;
-      border-radius: 999px;
+      left: 82px;
+      top: 6px;
+      width: 42px;
+      height: 35px;
+      border-radius: 8px 12px 5px 4px;
       background: var(--accent);
-      transform-origin: 50% 3px;
+      box-shadow: inset 0 -5px 0 rgba(0, 0, 0, .16);
     }
 
-    .runner-arm.back { animation: armBack 1.15s ease-in-out infinite; }
-    .runner-arm.front { animation: armFront 1.15s ease-in-out infinite; }
-    .runner-leg.back {
-      top: 29px;
-      background: var(--brand-dark);
-      animation: legBack 1.15s ease-in-out infinite;
+    .truck-window {
+      position: absolute;
+      left: 92px;
+      top: 12px;
+      width: 20px;
+      height: 13px;
+      border-radius: 4px 7px 3px 3px;
+      background: #e0f2fe;
+      border: 2px solid rgba(255, 255, 255, .75);
     }
-    .runner-leg.front {
-      top: 29px;
-      background: var(--brand-dark);
-      animation: legFront 1.15s ease-in-out infinite;
+
+    .tire-stack {
+      position: absolute;
+      left: 16px;
+      top: -4px;
+      display: grid;
+      grid-template-columns: repeat(4, 18px);
+      gap: 2px;
+    }
+
+    .cargo-tire {
+      width: 18px;
+      height: 18px;
+      border: 5px solid var(--ink);
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: inset 0 0 0 2px #cbd5e1;
+    }
+
+    .truck-wheel {
+      position: absolute;
+      top: 31px;
+      width: 21px;
+      height: 21px;
+      border: 6px solid var(--ink);
+      border-radius: 50%;
+      background: #fff;
+      animation: wheelSpin .9s linear infinite;
+    }
+
+    .truck-wheel.front { left: 92px; }
+    .truck-wheel.back { left: 21px; }
+
+    .exhaust {
+      position: absolute;
+      left: 24px;
+      top: 51px;
+      width: 0;
+      height: 0;
+    }
+
+    .smoke {
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: rgba(100, 116, 139, .32);
+      animation: smokePuff 1.8s ease-out infinite;
+    }
+
+    .smoke:nth-child(1) { animation-delay: 0s; }
+    .smoke:nth-child(2) { animation-delay: .45s; }
+    .smoke:nth-child(3) { animation-delay: .9s; }
     }
 
     .loading-text {
@@ -476,32 +517,22 @@
       text-align: center;
     }
 
-    @keyframes runnerBob {
-      0%, 100% { transform: translateY(0) rotate(-2deg); }
-      50% { transform: translateY(-5px) rotate(4deg); }
+    @keyframes truckBounce {
+      0%, 100% { transform: translateY(0) rotate(-.7deg); }
+      50% { transform: translateY(-3px) rotate(.7deg); }
     }
 
-    @keyframes armFront {
-      0%, 100% { transform: rotate(54deg); }
-      50% { transform: rotate(-58deg); }
+    @keyframes wheelSpin {
+      to { transform: rotate(360deg); }
     }
 
-    @keyframes armBack {
-      0%, 100% { transform: rotate(-56deg); }
-      50% { transform: rotate(48deg); }
+    @keyframes smokePuff {
+      0% { opacity: 0; transform: translate(0, 0) scale(.35); }
+      18% { opacity: .75; }
+      100% { opacity: 0; transform: translate(-55px, -20px) scale(1.85); }
     }
 
-    @keyframes legFront {
-      0%, 100% { transform: rotate(-54deg); }
-      50% { transform: rotate(42deg); }
-    }
-
-    @keyframes legBack {
-      0%, 100% { transform: rotate(46deg); }
-      50% { transform: rotate(-48deg); }
-    }
-
-    @keyframes trackSlide {
+    @keyframes roadSlide {
       from { transform: translateX(-120%); }
       to { transform: translateX(330%); }
     }
@@ -523,16 +554,30 @@
 <body>
   <div class="loading-overlay" id="loadingOverlay" aria-live="polite">
     <div class="loading-card">
-      <div class="runner" aria-hidden="true">
-        <div class="runner-body">
-          <span class="runner-head"></span>
-          <span class="runner-torso"></span>
-          <span class="runner-arm back"></span>
-          <span class="runner-arm front"></span>
-          <span class="runner-leg back"></span>
-          <span class="runner-leg front"></span>
+      <div class="truck-scene" aria-hidden="true">
+        <div class="exhaust">
+          <span class="smoke"></span>
+          <span class="smoke"></span>
+          <span class="smoke"></span>
         </div>
-        <div class="runner-track"></div>
+        <div class="truck">
+          <div class="tire-stack">
+            <span class="cargo-tire"></span>
+            <span class="cargo-tire"></span>
+            <span class="cargo-tire"></span>
+            <span class="cargo-tire"></span>
+            <span class="cargo-tire"></span>
+            <span class="cargo-tire"></span>
+            <span class="cargo-tire"></span>
+            <span class="cargo-tire"></span>
+          </div>
+          <span class="truck-bed"></span>
+          <span class="truck-cabin"></span>
+          <span class="truck-window"></span>
+          <span class="truck-wheel back"></span>
+          <span class="truck-wheel front"></span>
+        </div>
+        <div class="truck-road"></div>
       </div>
       <div class="loading-text" id="loadingText">正在登入 LINE</div>
       <div class="loading-subtext">資料準備中，請稍候</div>
