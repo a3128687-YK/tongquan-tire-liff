@@ -268,35 +268,55 @@
       color: var(--warn);
     }
 
+    .contact-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
     .contact-link {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      min-height: 40px;
-      width: fit-content;
-      margin-top: 2px;
-      padding: 0 12px;
+      gap: 7px;
+      min-height: 38px;
+      padding: 0 11px;
       border: 1px solid rgba(6, 199, 85, .35);
       border-radius: 999px;
       background: #ecfff3;
       color: #057a37;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 850;
       text-decoration: none;
     }
 
-    .line-icon {
-      width: 22px;
-      height: 22px;
+    .contact-link.phone {
+      border-color: rgba(15, 118, 110, .32);
+      background: #eefaf8;
+      color: var(--brand-dark);
+    }
+
+    .contact-icon {
+      width: 20px;
+      height: 20px;
       display: inline-grid;
       place-items: center;
-      border-radius: 7px;
-      background: #06c755;
+      flex: 0 0 auto;
+      border-radius: 6px;
       color: #fff;
-      font-size: 11px;
-      font-weight: 950;
       line-height: 1;
+    }
+
+    .line-icon {
+      background: #06c755;
+      font-size: 10px;
+      font-weight: 950;
+    }
+
+    .phone-icon {
+      background: var(--brand);
+      font-size: 13px;
     }
 
     .empty {
@@ -315,6 +335,8 @@
       .mode { grid-column: 1 / -1; }
       .mode { white-space: normal; }
       button { flex: 1 1 auto; }
+      .contact-actions { display: grid; grid-template-columns: 1fr 1fr; }
+      .contact-link { width: 100%; }
       .results { grid-template-columns: 1fr; }
     }
   </style>
@@ -372,7 +394,8 @@
   <script>
     const LIFF_ID = '2010125232-bNHZhARc';
     const API_URL = 'https://script.google.com/macros/s/AKfycbyN72C-66y587hnc9IwuS7pLSSEBQw70nD93mFex_8UYzt-KCU2jIiOyHty1Az2Nzvs/exec';
-    const CONTACT_LINE_URL = 'https://line.me/R/ti/p/@958cazox';
+    const CONTACT_LINE_URL = 'https://line.me/R/ti/p/YOKOHAMA888';
+    const CONTACT_PHONE = '0929783497';
     const state = {
       profile: {},
       role: 'customer',
@@ -627,10 +650,16 @@
           ? `<div class="meta">內部庫存：${escapeHtml(item.stockRaw)}　更新：${escapeHtml(item.updatedAt || '')}</div>`
           : '';
         const contactLine = `
-          <a class="contact-link" href="${CONTACT_LINE_URL}" target="_blank" rel="noopener">
-            <span class="line-icon">LINE</span>
-            與我聯繫
-          </a>
+          <div class="contact-actions">
+            <a class="contact-link" href="${CONTACT_LINE_URL}" target="_blank" rel="noopener">
+              <span class="contact-icon line-icon">LINE</span>
+              LINE 聯繫
+            </a>
+            <a class="contact-link phone" href="tel:${CONTACT_PHONE}">
+              <span class="contact-icon phone-icon">☎</span>
+              撥打電話
+            </a>
+          </div>
         `;
 
         card.innerHTML = `
