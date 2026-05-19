@@ -254,18 +254,20 @@
 
     .stock {
       width: fit-content;
-      padding: 7px 11px;
+      padding: 10px 15px;
       border-radius: 999px;
-      background: #e8f7f0;
+      background: linear-gradient(180deg, #e6fbef 0, #d7f6e7 100%);
       color: var(--brand-dark);
-      font-size: 16px;
-      font-weight: 800;
+      font-size: 19px;
+      font-weight: 950;
       letter-spacing: 0;
+      box-shadow: 0 7px 16px rgba(15, 118, 110, .13);
     }
 
     .stock.call {
-      background: #fff2e9;
+      background: linear-gradient(180deg, #fff3e8 0, #ffe6d2 100%);
       color: var(--warn);
+      box-shadow: 0 7px 16px rgba(154, 52, 18, .11);
     }
 
     .contact-actions {
@@ -578,13 +580,15 @@
     const API_URL = 'https://script.google.com/macros/s/AKfycbyN72C-66y587hnc9IwuS7pLSSEBQw70nD93mFex_8UYzt-KCU2jIiOyHty1Az2Nzvs/exec';
     const CONTACT_LINE_URL = 'https://line.me/ti/p/rfM3-6Bntr';
     const CONTACT_PHONE = '0929783497';
+    const MIN_LOADING_MS = 1200;
     const state = {
       profile: {},
       role: 'customer',
       inventory: [],
       selectedRim: '',
       selectedWidth: '',
-      selectedSpec: ''
+      selectedSpec: '',
+      loadingStartedAt: 0
     };
 
     const els = {
@@ -649,7 +653,17 @@
 
     function setLoading(active, message) {
       if (message) els.loadingText.textContent = message;
-      els.loadingOverlay.classList.toggle('hidden', !active);
+      if (active) {
+        state.loadingStartedAt = Date.now();
+        els.loadingOverlay.classList.remove('hidden');
+        return;
+      }
+
+      const elapsed = Date.now() - state.loadingStartedAt;
+      const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
+      window.setTimeout(() => {
+        els.loadingOverlay.classList.add('hidden');
+      }, remaining);
     }
 
     async function requireLineProfile() {
@@ -838,7 +852,7 @@
         const card = document.createElement('article');
         card.className = 'card';
         const stockClass = item.stockLabel === '請來電洽詢' ? 'stock call' : 'stock';
-        const stockText = item.stockLabel === '請來電洽詢' ? item.stockLabel : `庫存 ${item.stockLabel}`;
+        const stockText = item.stockLabel === '請來電洽詢' ? item.stockLabel : `庫存 ${item.stockLabel} 條`;
         const adminLine = state.role === 'admin' && item.stockRaw
           ? `<div class="meta">內部庫存：${escapeHtml(item.stockRaw)}　更新：${escapeHtml(item.updatedAt || '')}</div>`
           : '';
