@@ -85,21 +85,32 @@
 
     .search-row {
       display: grid;
-      grid-template-columns: 1fr auto auto auto;
+      grid-template-columns: 1fr auto auto;
       gap: 12px;
       margin: 16px 0;
     }
 
     input {
-      min-height: 46px;
+      min-height: 56px;
       width: 100%;
-      padding: 0 15px;
+      padding: 0 18px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--surface);
       color: var(--ink);
-      font-size: 16px;
+      font-size: 21px;
+      font-weight: 800;
       box-shadow: var(--shadow);
+    }
+
+    input::placeholder {
+      color: #94a3b8;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .search-input {
+      grid-column: 1 / -1;
     }
 
     .mode {
@@ -568,7 +579,7 @@
       header, .panel-head { align-items: start; flex-direction: column; }
       .user-state, .hint { text-align: left; }
       .search-row { grid-template-columns: 1fr auto auto; }
-      .mode { grid-column: 1 / -1; }
+      .search-input, .mode { grid-column: 1 / -1; }
       .mode { white-space: normal; }
       button { flex: 1 1 auto; }
       .contact-actions { display: grid; grid-template-columns: 1.25fr .85fr; }
@@ -623,7 +634,7 @@
     </header>
 
     <div class="search-row">
-      <input id="quickSearch" type="search" placeholder="快速搜尋規格，例如 2055516">
+      <input class="search-input" id="quickSearch" type="search" placeholder="快速搜尋規格，例如 2055516">
       <button class="search-button" id="searchButton" type="button">查詢</button>
       <button class="clear-button" id="clearButton" type="button">清除</button>
       <div class="mode" id="modeText">準備載入</div>
@@ -988,10 +999,11 @@
       items.forEach(item => {
         const card = document.createElement('article');
         card.className = 'card';
-        const stockClass = item.stockLabel === '請來電洽詢' ? 'stock call' : 'stock';
-        const stockText = item.stockLabel === '請來電洽詢' ? item.stockLabel : `庫存 ${item.stockLabel} 條`;
-        const adminLine = state.role === 'admin' && item.stockRaw
-          ? `<div class="meta">內部庫存：${escapeHtml(item.stockRaw)}　更新：${escapeHtml(item.updatedAt || '')}</div>`
+        const isCallOnly = item.stockLabel === '請來電洽詢' || item.stockLabel === '請來電洽詢(0條)';
+        const stockClass = isCallOnly ? 'stock call' : 'stock';
+        const stockText = isCallOnly ? '請來電洽詢(0條)' : `庫存 ${item.stockLabel} 條`;
+        const adminLine = state.role === 'admin' && item.updatedAt
+          ? `<div class="meta">更新：${escapeHtml(item.updatedAt || '')}</div>`
           : '';
         const contactLine = `
           <div class="contact-actions">
@@ -1024,7 +1036,7 @@
     function logQuery(spec, matches) {
       if (!spec || spec === state.lastLoggedSpec) return;
       state.lastLoggedSpec = spec;
-      const inStockCount = matches.filter(item => item.stockLabel !== '請來電洽詢').length;
+      const inStockCount = matches.filter(item => item.stockLabel !== '請來電洽詢' && item.stockLabel !== '請來電洽詢(0條)').length;
       callApi('logQuery', {
         idToken: state.profile.idToken,
         spec,
