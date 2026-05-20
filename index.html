@@ -988,6 +988,10 @@
       });
     }
 
+    function isCallStock(label) {
+      return String(label || '').includes('請來電洽詢');
+    }
+
     function renderResults(items) {
       els.results.innerHTML = '';
       if (!items.length) {
@@ -999,7 +1003,7 @@
       items.forEach(item => {
         const card = document.createElement('article');
         card.className = 'card';
-        const isCallOnly = item.stockLabel === '請來電洽詢' || item.stockLabel === '請來電洽詢(0條)';
+        const isCallOnly = isCallStock(item.stockLabel);
         const stockClass = isCallOnly ? 'stock call' : 'stock';
         const stockText = isCallOnly ? '請來電洽詢' : `庫存 ${item.stockLabel} 條`;
         const adminLine = state.role === 'admin' && item.updatedAt
@@ -1036,7 +1040,7 @@
     function logQuery(spec, matches) {
       if (!spec || spec === state.lastLoggedSpec) return;
       state.lastLoggedSpec = spec;
-      const inStockCount = matches.filter(item => item.stockLabel !== '請來電洽詢' && item.stockLabel !== '請來電洽詢(0條)').length;
+      const inStockCount = matches.filter(item => !isCallStock(item.stockLabel)).length;
       callApi('logQuery', {
         idToken: state.profile.idToken,
         spec,
