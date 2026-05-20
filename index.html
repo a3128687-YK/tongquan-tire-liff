@@ -1001,7 +1001,7 @@
         card.className = 'card';
         const isCallOnly = item.stockLabel === '請來電洽詢' || item.stockLabel === '請來電洽詢(0條)';
         const stockClass = isCallOnly ? 'stock call' : 'stock';
-        const stockText = isCallOnly ? '請來電洽詢(0條)' : `庫存 ${item.stockLabel} 條`;
+        const stockText = isCallOnly ? '請來電洽詢' : `庫存 ${item.stockLabel} 條`;
         const adminLine = state.role === 'admin' && item.updatedAt
           ? `<div class="meta">更新：${escapeHtml(item.updatedAt || '')}</div>`
           : '';
